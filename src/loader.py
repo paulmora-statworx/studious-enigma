@@ -28,14 +28,15 @@ class MNISTDataLoader:
         self.testloader = torch.utils.data.DataLoader(
             testset, batch_size=self.config.loader.batch_size, shuffle=True
         )
+        batch_size = self.config.loader.batch_size
         print(
-            f"We have a trainings length of {len(self.trainloader) * self.config.loader.batch_size}"
+            f"We have {len(self.trainloader) * batch_size} training observations"
         )
         print(
-            f"We have a validation length of {len(self.valloader) * self.config.loader.batch_size}"
+            f"We have {len(self.valloader) * batch_size} validation observations"
         )
         print(
-            f"We have a test length of {len(self.testloader) * self.config.loader.batch_size}"
+            f"We have {len(self.testloader) * batch_size} test observations"
         )
 
     def create_train_test_val(self):
@@ -50,14 +51,16 @@ class MNISTDataLoader:
             stratify=targets,
         )
 
-        trainset, valset = train_test_split(
+        trainset, valset, target_train, target_val = train_test_split(
             trainset,
-            train_size=self.config.loader.train_size,
+            target_train,
+            train_size=self.config.loader.validation_size,
             random_state=self.config.loader.random_state,
             shuffle=True,
             stratify=target_train,
         )
 
+        self.plot_distribution(target_train, target_test, target_val)
         return trainset, testset, valset
 
     def create_dataset(self):
