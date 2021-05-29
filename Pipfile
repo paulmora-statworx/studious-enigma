@@ -11,6 +11,7 @@ torchvision = "*"
 matplotlib = "*"
 dotmap = "*"
 sklearn = "*"
+tqdm = "*"
 
 [dev-packages]
 

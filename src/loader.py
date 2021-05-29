@@ -17,33 +17,29 @@ class MNISTDataLoader:
         self.create_loaders()
 
     def create_loaders(self):
-        trainset, testset, valset = self.create_train_test_val()
-
-        self.trainloader = torch.utils.data.DataLoader(
-            trainset, batch_size=self.config.loader.batch_size, shuffle=True
-        )
-        self.valloader = torch.utils.data.DataLoader(
-            valset, batch_size=self.config.loader.batch_size, shuffle=True
-        )
-        self.testloader = torch.utils.data.DataLoader(
-            testset, batch_size=self.config.loader.batch_size, shuffle=True
-        )
+        train_set, test_set, val_set = self.create_train_test_val()
         batch_size = self.config.loader.batch_size
-        print(
-            f"We have {len(self.trainloader) * batch_size} training observations"
+
+        self.train_loader = torch.utils.data.DataLoader(
+            train_set, batch_size=self.config.loader.batch_size, shuffle=True
         )
-        print(
-            f"We have {len(self.valloader) * batch_size} validation observations"
+        self.val_loader = torch.utils.data.DataLoader(
+            val_set, batch_size=self.config.loader.batch_size, shuffle=True
         )
-        print(
-            f"We have {len(self.testloader) * batch_size} test observations"
+        self.test_loader = torch.utils.data.DataLoader(
+            test_set, batch_size=self.config.loader.batch_size, shuffle=True
         )
+        self.plot_example_images(self.train_loader)
+        print(f"We have {len(self.train_loader) * batch_size} training observations")
+        print(f"We have {len(self.val_loader) * batch_size} validation observations")
+        print(f"We have {len(self.test_loader) * batch_size} test observations")
 
     def create_train_test_val(self):
         dataset, targets = self.create_dataset()
+        data_index = np.arange(len(dataset))
 
-        trainset, testset, target_train, target_test = train_test_split(
-            dataset,
+        train_index, test_index, target_train, target_test = train_test_split(
+            data_index,
             targets,
             train_size=self.config.loader.train_size,
             random_state=self.config.loader.random_state,
@@ -51,8 +47,8 @@ class MNISTDataLoader:
             stratify=targets,
         )
 
-        trainset, valset, target_train, target_val = train_test_split(
-            trainset,
+        train_index, val_index, target_train, target_val = train_test_split(
+            train_index,
             target_train,
             train_size=self.config.loader.validation_size,
             random_state=self.config.loader.random_state,
@@ -60,8 +56,11 @@ class MNISTDataLoader:
             stratify=target_train,
         )
 
-        self.plot_distribution(target_train, target_test, target_val)
-        return trainset, testset, valset
+        train_data = torch.utils.data.Subset(dataset, train_index)
+        val_data = torch.utils.data.Subset(dataset, val_index)
+        test_data = torch.utils.data.Subset(dataset, test_index)
+
+        return train_data, val_data, test_data
 
     def create_dataset(self):
 
@@ -69,7 +68,10 @@ class MNISTDataLoader:
             [
                 transforms.Resize((224, 224)),
                 transforms.ToTensor(),
-                transforms.Normalize(0.5, 0.5),
+                transforms.Lambda(lambda x: x.repeat(3, 1, 1)),
+                transforms.Normalize(
+                    mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
+                ),
             ]
         )
         trainset = torchvision.datasets.MNIST(
@@ -84,16 +86,14 @@ class MNISTDataLoader:
             download=False,
             transform=transform,
         )
-        dataset = ConcatDataset([trainset, testset])
+        data = torch.utils.data.ConcatDataset([trainset, testset])
         targets = torch.cat((trainset.targets, testset.targets))
-        return dataset, targets
+        return data, targets
 
     def plot_example_images(self, loader):
         dataiter = iter(loader)
         image, _ = dataiter.next()
         image = torchvision.utils.make_grid(image)
-
-        image = image / 2 + 0.5
         np_image = image.numpy()
 
         fig, axs = plt.subplots(figsize=(15, 10))
