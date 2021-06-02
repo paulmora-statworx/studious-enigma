@@ -5,12 +5,13 @@ name = "pypi"
 
 [packages]
 pre-commit = "*"
-torch = "*"
 black = "*"
-torchvision = "*"
 matplotlib = "*"
 dotmap = "*"
 sklearn = "*"
+tqdm = "*"
+tensorflow = "*"
+keras = "*"
 
 [dev-packages]
 

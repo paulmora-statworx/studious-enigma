@@ -2,11 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import torch
-import torchvision
-import torchvision.transforms as transforms
-from torch.utils.data import ConcatDataset
-from sklearn.model_selection import train_test_split
+from tensorflow.keras.preprocessing import image_dataset_from_directory
 
 # %% Classes
 
@@ -14,91 +10,50 @@ from sklearn.model_selection import train_test_split
 class MNISTDataLoader:
     def __init__(self, config):
         self.config = config
-        self.create_loaders()
+        self.train_dataset, self.val_dataset, self.test_dataset = self.create_dataset()
 
-    def create_loaders(self):
-        trainset, testset, valset = self.create_train_test_val()
+        number_train_images = len(self.train_dataset) * self.config.loader.batch_size
+        number_val_images = len(self.val_dataset) * self.config.loader.batch_size
+        number_test_images = len(self.test_dataset) * self.config.loader.batch_size
 
-        self.trainloader = torch.utils.data.DataLoader(
-            trainset, batch_size=self.config.loader.batch_size, shuffle=True
-        )
-        self.valloader = torch.utils.data.DataLoader(
-            valset, batch_size=self.config.loader.batch_size, shuffle=True
-        )
-        self.testloader = torch.utils.data.DataLoader(
-            testset, batch_size=self.config.loader.batch_size, shuffle=True
-        )
-        batch_size = self.config.loader.batch_size
-        print(
-            f"We have {len(self.trainloader) * batch_size} training observations"
-        )
-        print(
-            f"We have {len(self.valloader) * batch_size} validation observations"
-        )
-        print(
-            f"We have {len(self.testloader) * batch_size} test observations"
-        )
-
-    def create_train_test_val(self):
-        dataset, targets = self.create_dataset()
-
-        trainset, testset, target_train, target_test = train_test_split(
-            dataset,
-            targets,
-            train_size=self.config.loader.train_size,
-            random_state=self.config.loader.random_state,
-            shuffle=True,
-            stratify=targets,
-        )
-
-        trainset, valset, target_train, target_val = train_test_split(
-            trainset,
-            target_train,
-            train_size=self.config.loader.validation_size,
-            random_state=self.config.loader.random_state,
-            shuffle=True,
-            stratify=target_train,
-        )
-
-        self.plot_distribution(target_train, target_test, target_val)
-        return trainset, testset, valset
+        print(f"Number of training images: {number_train_images}")
+        print(f"Number of validation images: {number_val_images}")
+        print(f"Number of testing images: {number_test_images}")
 
     def create_dataset(self):
+        dataset = self.load_dataset()
+        dataset_size = len(dataset)
+        test_val_size = (1 - self.config.loader.train_size) / 2
 
-        transform = transforms.Compose(
-            [
-                transforms.Resize((224, 224)),
-                transforms.ToTensor(),
-                transforms.Normalize(0.5, 0.5),
-            ]
+        train_size = int(self.config.loader.train_size * dataset_size)
+        val_size = int(test_val_size * dataset_size)
+        test_size = int(test_val_size * dataset_size)
+
+        train_dataset = dataset.take(train_size)
+        test_dataset = dataset.skip(train_size)
+        val_dataset = test_dataset.skip(val_size)
+        test_dataset = test_dataset.take(test_size)
+
+        return train_dataset, val_dataset, test_dataset
+
+    def load_dataset(self):
+        image_size = (self.config.loader.target_size, self.config.loader.target_size)
+        dataset = image_dataset_from_directory(
+            self.config.loader.root,
+            batch_size=self.config.loader.batch_size,
+            shuffle=True,
+            image_size=image_size,
         )
-        trainset = torchvision.datasets.MNIST(
-            root=self.config.loader.root,
-            train=True,
-            download=False,
-            transform=transform,
-        )
-        testset = torchvision.datasets.MNIST(
-            root=self.config.loader.root,
-            train=False,
-            download=False,
-            transform=transform,
-        )
-        dataset = ConcatDataset([trainset, testset])
-        targets = torch.cat((trainset.targets, testset.targets))
-        return dataset, targets
+        self.plot_images(dataset)
+        return dataset
 
-    def plot_example_images(self, loader):
-        dataiter = iter(loader)
-        image, _ = dataiter.next()
-        image = torchvision.utils.make_grid(image)
-
-        image = image / 2 + 0.5
-        np_image = image.numpy()
-
-        fig, axs = plt.subplots(figsize=(15, 10))
-        axs.imshow(np.transpose(np_image, (1, 2, 0)))
-        axs.axis("off")
-        file_name = "../reports/figures/example_images.png"
-        fig.savefig(fname=file_name)
+    def plot_images(self, dataset):
+        images, _ = next(iter(dataset))
+        fig, axs = plt.subplots(figsize=(20, 10), ncols=self.config.loader.examples)
+        axs = axs.ravel()
+        for i, image in enumerate(images[: self.config.loader.examples]):
+            np_image = image.numpy().astype(np.uint8)
+            axs[i].imshow(np_image)
+            axs[i].axis("off")
+        fig.savefig(fname="../reports/figures/example_images.png", bbox_inches="tight")
         plt.close()
