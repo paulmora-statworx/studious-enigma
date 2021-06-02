@@ -1,14 +1,16 @@
 {
   "loader": {
     "batch_size": 32,
-    "root": "../data",
-    "train_size": 0.8,
-    "validation_size": 0.75,
+    "root": "../data/mnist_full",
+    "train_size": 0.7,
     "random_state": 42,
-    "subset_size": 10000
+    "target_size": 224,
+    "examples": 4
   },
   "model": {
-    "lr": 0.0005
+    "learning_rate": 0.0005,
+    "target_size": 224,
+    "number_of_classes": 10
   },
   "trainer": {
     "number_of_epochs": 3,

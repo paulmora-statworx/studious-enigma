@@ -1,8 +1,5 @@
 # %% Packages
 
-import torch
-from tqdm import tqdm
-from torch.autograd import Variable
 
 # %% Classes
 
