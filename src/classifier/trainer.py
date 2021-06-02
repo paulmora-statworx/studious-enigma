@@ -18,3 +18,6 @@ class MNISTTrainer:
             epochs=self.config.trainer.number_of_epochs,
             validation_data=self.data.val_dataset,
         )
+
+        _, test_accuracy = self.model.model.evaluate(self.data.val_dataset)
+        print("Test accuracy :", test_accuracy)

@@ -36,7 +36,7 @@ class MNISTModelLoader:
             optimizer=tf.keras.optimizers.Adam(
                 learning_rate=self.config.model.learning_rate
             ),
-            loss="sparse_categorical_crossentropy",
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
             metrics=["accuracy"],
         )
 

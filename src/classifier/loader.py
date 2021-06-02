@@ -10,31 +10,24 @@ from tensorflow.keras.preprocessing import image_dataset_from_directory
 class MNISTDataLoader:
     def __init__(self, config):
         self.config = config
-        self.train_dataset, self.val_dataset, self.test_dataset = self.create_dataset()
+        self.train_dataset, self.val_dataset = self.create_dataset()
 
         number_train_images = len(self.train_dataset) * self.config.loader.batch_size
         number_val_images = len(self.val_dataset) * self.config.loader.batch_size
-        number_test_images = len(self.test_dataset) * self.config.loader.batch_size
 
+        print(f"Number of total images: {number_train_images+number_val_images}")
         print(f"Number of training images: {number_train_images}")
         print(f"Number of validation images: {number_val_images}")
-        print(f"Number of testing images: {number_test_images}")
 
     def create_dataset(self):
         dataset = self.load_dataset()
         dataset_size = len(dataset)
-        test_val_size = (1 - self.config.loader.train_size) / 2
-
         train_size = int(self.config.loader.train_size * dataset_size)
-        val_size = int(test_val_size * dataset_size)
-        test_size = int(test_val_size * dataset_size)
 
         train_dataset = dataset.take(train_size)
-        test_dataset = dataset.skip(train_size)
-        val_dataset = test_dataset.skip(val_size)
-        test_dataset = test_dataset.take(test_size)
+        val_dataset = dataset.skip(train_size)
 
-        return train_dataset, val_dataset, test_dataset
+        return train_dataset, val_dataset
 
     def load_dataset(self):
         image_size = (self.config.loader.target_size, self.config.loader.target_size)
