@@ -10,4 +10,11 @@ class MNISTTrainer:
         self.data = data
         self.model = model
 
-    pass
+        self.train_model()
+
+    def train_model(self):
+        history = self.model.model.fit(
+            self.data.train_dataset,
+            epochs=self.config.trainer.number_of_epochs,
+            validation_data=self.data.val_dataset,
+        )

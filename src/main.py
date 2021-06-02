@@ -18,7 +18,7 @@ def main():
     data = MNISTDataLoader(config)
 
     print("Calling the model")
-    model = MNISTModelLoader(data, config)
+    model = MNISTModelLoader(config)
 
     print("Training the model")
     trainer = MNISTTrainer(data, model, config)

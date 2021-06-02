@@ -23,7 +23,7 @@ class MNISTDataLoader:
     def create_dataset(self):
         dataset = self.load_dataset()
         dataset_size = len(dataset)
-        test_val_size = (1-self.config.loader.train_size) / 2
+        test_val_size = (1 - self.config.loader.train_size) / 2
 
         train_size = int(self.config.loader.train_size * dataset_size)
         val_size = int(test_val_size * dataset_size)
@@ -42,7 +42,7 @@ class MNISTDataLoader:
             self.config.loader.root,
             batch_size=self.config.loader.batch_size,
             shuffle=True,
-            image_size=image_size
+            image_size=image_size,
         )
         self.plot_images(dataset)
         return dataset
