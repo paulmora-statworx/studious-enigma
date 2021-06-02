@@ -24,7 +24,6 @@ class MNISTTrainer:
         self.plot_history(history, test_loss, test_accuracy)
         print("Test accuracy :", test_accuracy)
 
-
     def plot_history(self, history, test_loss, test_accuracy):
         train_acc = history.history["accuracy"]
         val_acc = history.history["val_accuracy"]
@@ -37,15 +36,26 @@ class MNISTTrainer:
 
         axs[0].plot(train_acc, label="Training Accuracy")
         axs[0].plot(val_acc, label="Validation Accuracy")
-        axs[0].scatter(x=(len(train_acc)-1), y=test_accuracy, label="Test Accuracy", marker="X", color="red")
+        axs[0].scatter(
+            x=(len(train_acc) - 1),
+            y=test_accuracy,
+            label="Test Accuracy",
+            marker="X",
+            color="red",
+        )
         axs[0].set_title("Accuracy Scores")
         axs[0].legend()
 
         axs[1].plot(train_loss, label="Training Loss")
         axs[1].plot(val_loss, label="Validation Loss")
-        axs[1].scatter(x=(len(train_acc)-1), y=test_loss, label="Test Accuracy", marker="X", color="red")
+        axs[1].scatter(
+            x=(len(train_acc) - 1),
+            y=test_loss,
+            label="Test Accuracy",
+            marker="X",
+            color="red",
+        )
         axs[1].set_title("Loss Scores")
         axs[1].legend()
 
         fig.savefig(f"../reports/figures/{self.config.trainer.png_name}.png")
-
