@@ -3,7 +3,9 @@
 from torchvision import models
 import torch.optim as optim
 from torch.nn import Sequential, Linear, CrossEntropyLoss
+import ssl
 
+ssl._create_default_https_context = ssl._create_unverified_context
 # %% Classes
 
 
@@ -14,7 +16,7 @@ class MNISTModelLoader:
         self.load_model()
 
     def load_model(self):
-        self.model = models.vgg16_bn(pretrained=True)
+        self.model = models.mobilenet_v2(pretrained=True)
         for param in self.model.parameters():
             param.requires_grad = False
 

@@ -88,7 +88,14 @@ class MNISTDataLoader:
         )
         data = torch.utils.data.ConcatDataset([trainset, testset])
         targets = torch.cat((trainset.targets, testset.targets))
-        return data, targets
+
+        subsample_data = torch.utils.data.Subset(
+            data, range(self.config.loader.subset_size)
+        )
+        subsample_targets = torch.utils.data.Subset(
+            targets, range(self.config.loader.subset_size)
+        )
+        return subsample_data, subsample_targets
 
     def plot_example_images(self, loader):
         dataiter = iter(loader)

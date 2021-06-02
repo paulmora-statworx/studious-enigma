@@ -4,13 +4,14 @@
     "root": "../data",
     "train_size": 0.8,
     "validation_size": 0.75,
-    "random_state": 42
+    "random_state": 42,
+    "subset_size": 10000
   },
   "model": {
     "lr": 0.0005
   },
   "trainer": {
-    "number_of_epochs": 10,
-    "batch_size": 128
+    "number_of_epochs": 3,
+    "batch_size": 32
   }
 }
