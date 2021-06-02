@@ -1,0 +1,21 @@
+{
+  "loader": {
+    "batch_size": 32,
+    "train_root": "../data/mnist_small",
+    "test_root": "../data/mnist_test",
+    "train_size": 0.75,
+    "random_state": 42,
+    "target_size": 224,
+    "examples": 4
+  },
+  "model": {
+    "learning_rate": 0.0005,
+    "target_size": 224,
+    "number_of_classes": 10
+  },
+  "trainer": {
+    "number_of_epochs": 3,
+    "batch_size": 32,
+    "png_name": "small_dataset_scores"
+  }
+}

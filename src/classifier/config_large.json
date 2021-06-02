@@ -1,7 +1,8 @@
 {
   "loader": {
     "batch_size": 32,
-    "root": "../data/mnist_full",
+    "train_root": "../data/mnist_large",
+    "test_root": "../data/mnist_test",
     "train_size": 0.75,
     "random_state": 42,
     "target_size": 224,
@@ -14,6 +15,7 @@
   },
   "trainer": {
     "number_of_epochs": 3,
-    "batch_size": 32
+    "batch_size": 32,
+    "png_name": "large_dataset_scores"
   }
 }
