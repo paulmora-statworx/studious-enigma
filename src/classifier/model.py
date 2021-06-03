@@ -1,6 +1,7 @@
 # %% Packages
 
 import tensorflow as tf
+from tensorflow.keras import layers
 
 # %% Classes
 
@@ -20,9 +21,9 @@ class MNISTModelLoader:
         mobilenet_model.trainable = False
 
         preprocessing_function = tf.keras.applications.mobilenet_v2.preprocess_input
-        pooling_layer = tf.keras.layers.GlobalAveragePooling2D()
-        dropout_layer = tf.keras.layers.Dropout(0.2)
-        output_layer = tf.keras.layers.Dense(self.config.model.number_of_classes)
+        pooling_layer = layers.GlobalAveragePooling2D()
+        dropout_layer = layers.Dropout(0.2)
+        output_layer = layers.Dense(self.config.model.number_of_classes)
 
         inputs = tf.keras.Input(shape=input_shape)
         x = preprocessing_function(inputs)

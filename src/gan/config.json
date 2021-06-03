@@ -1,0 +1,10 @@
+{
+  "generator": {
+    "image_size": 28,
+    "size_of_latent_vector": 100
+  },
+  "discriminator": {
+  },
+  "trainer": {
+  }
+}
