@@ -21,7 +21,7 @@ def main():
     model = MNISTModelLoader(config)
 
     print("Training the model")
-    trainer = MNISTTrainer(data, model, config)
+    MNISTTrainer(data, model, config)
 
 
 if __name__ == "__main__":
